@@ -5,15 +5,10 @@ line = lines[0]
 
 
 def marker(window_len):
-    window = []
-    index = 1
-    for c in line:
-        window.append(c)
-        if len(window) > window_len:
-            window.pop(0)
-        if len(set(window)) == len(window) == window_len:
-            return index
-        index += 1
+    for i in range(window_len, len(line)):
+        window = line[i - window_len:i]
+        if len(set(window)) == len(window):
+            return i
 
 
 print(marker(4))
