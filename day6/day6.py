@@ -6,8 +6,7 @@ line = lines[0]
 
 def marker(window_len):
     for i in range(window_len, len(line)):
-        window = line[i - window_len:i]
-        if len(set(window)) == len(window):
+        if len(set(line[i - window_len:i])) == window_len:
             return i
 
 
