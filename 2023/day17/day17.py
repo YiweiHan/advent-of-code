@@ -20,37 +20,12 @@ next_dirs = {
     left: {up, down, left},
     right: {up, down, right},
 }
-heuristic = [[None] * cols for _ in grid]
-
-
-def make_heuristic(r, c):
-    def recurse(r, c):
-        if heuristic[r][c] is not None:
-            return heuristic[r][c]
-        v = grid[r][c]
-        if r == rows - 1 and c == cols - 1:
-            heuristic[r][c] = v
-        elif r == rows - 1:
-            heuristic[r][c] = v + recurse(r, c + 1)
-        elif c == cols - 1:
-            heuristic[r][c] = v + recurse(r + 1, c)
-        else:
-            heuristic[r][c] = v + min(recurse(r + 1, c), recurse(r, c + 1))
-        return heuristic[r][c]
-    recurse(r, c)
-    for r in range(rows):
-        for c in range(cols):
-            heuristic[r][c] = heuristic[r][c] - grid[r][c]
-
-
-make_heuristic(*start)
-start_heuristic = heuristic[start[0]][start[1]]
 
 
 def search(min_straight_count, max_straight_count):
     q = []
-    heapq.heappush(q, (start_heuristic, 0, start, 0, right))
-    heapq.heappush(q, (start_heuristic, 0, start, 0, down))
+    heapq.heappush(q, (0, start, 0, right))
+    heapq.heappush(q, (0, start, 0, down))
 
     min_heat_losses = {}
 
@@ -63,15 +38,14 @@ def search(min_straight_count, max_straight_count):
         if 0 <= n[0] < rows and 0 <= n[1] < cols:
             new_straight_count = straight_count + 1 if dir == prev_dir else 1
             new_heat_loss = heat_loss + grid[n[0]][n[1]]
-            priority = new_heat_loss + heuristic[n[0]][n[1]]
             min_heat_loss = min_heat_losses.get((n, new_straight_count, dir))
             if min_heat_loss is None or new_heat_loss < min_heat_loss:
                 min_heat_losses[(n, new_straight_count, dir)] = new_heat_loss
-                heapq.heappush(q, (priority, new_heat_loss, n, new_straight_count, dir))
+                heapq.heappush(q, (new_heat_loss, n, new_straight_count, dir))
 
     min_heat_loss = None
     while len(q):
-        _, heat_loss, cur_pos, straight_count, dir = heapq.heappop(q)
+        heat_loss, cur_pos, straight_count, dir = heapq.heappop(q)
         if cur_pos == target:
             if min_straight_count is None or straight_count >= min_straight_count:
                 if min_heat_loss is None or heat_loss < min_heat_loss:
