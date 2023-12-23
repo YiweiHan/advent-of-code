@@ -69,7 +69,7 @@ def find_max_steps(directed):
 
     max_steps = 0
     q = deque()
-    q.append((start, {}, 0))
+    q.append((start, [], 0))
     while len(q):
         cur, prev_path, steps_taken = q.pop()
 
@@ -77,9 +77,7 @@ def find_max_steps(directed):
             max_steps = steps_taken if steps_taken > max_steps else max_steps
             continue
 
-        new_path = prev_path.copy()
-        new_path[cur] = steps_taken
-        q.extend([(next_node, new_path, steps_taken + steps) for next_node, steps in steps_from_to[cur].items() if next_node not in prev_path])
+        q.extend([(next_node, prev_path + [cur], steps_taken + steps) for next_node, steps in steps_from_to[cur].items() if next_node not in prev_path])
     return max_steps
 
 
